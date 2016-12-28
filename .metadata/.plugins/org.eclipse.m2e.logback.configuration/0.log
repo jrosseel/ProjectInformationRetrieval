@@ -473,3 +473,11 @@
 2016-12-28 15:15:05,188 [Worker-21] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory C:\Users\JRosseel\Google Drive\School\Master\Semester 3\Information Retrieval\InfoRetrievalSystem\src\main\resources
 2016-12-28 15:15:05,194 [Worker-21] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (Cp1252 actually) to copy filtered resources, i.e. build is platform dependent!
 2016-12-28 15:15:05,207 [Worker-21] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory C:\Users\JRosseel\Google Drive\School\Master\Semester 3\Information Retrieval\InfoRetrievalSystem\src\test\resources
+2016-12-28 21:44:19,305 [Worker-27] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (Cp1252 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-12-28 21:44:19,463 [Worker-27] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory C:\Users\JRosseel\Google Drive\School\Master\Semester 3\Information Retrieval\InfoRetrievalSystem\src\main\resources
+2016-12-28 21:44:19,476 [Worker-27] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (Cp1252 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-12-28 21:44:19,551 [Worker-27] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory C:\Users\JRosseel\Google Drive\School\Master\Semester 3\Information Retrieval\InfoRetrievalSystem\src\test\resources
+2016-12-28 21:48:35,507 [Worker-27] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (Cp1252 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-12-28 21:48:35,527 [Worker-27] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory C:\Users\JRosseel\Google Drive\School\Master\Semester 3\Information Retrieval\InfoRetrievalSystem\src\main\resources
+2016-12-28 21:48:35,538 [Worker-27] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (Cp1252 actually) to copy filtered resources, i.e. build is platform dependent!
+2016-12-28 21:48:35,551 [Worker-27] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory C:\Users\JRosseel\Google Drive\School\Master\Semester 3\Information Retrieval\InfoRetrievalSystem\src\test\resources

@@ -16,6 +16,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/JRosseel/Google Drive/School/Master/Semester 3/Information Retrieval/lucene-3.6.2/lucene-core-3.6.2.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
