@@ -12,3 +12,4 @@ org.eclipse.jdt.core.compiler.compliance=1.8
 org.eclipse.jdt.core.compiler.problem.assertIdentifier=error
 org.eclipse.jdt.core.compiler.problem.enumIdentifier=error
 org.eclipse.jdt.core.compiler.source=1.8
+org.eclipse.jdt.core.userLibrary.Lucene=<?xml version\="1.0" encoding\="UTF-8"?>\r\n<userlibrary systemlibrary\="false" version\="2">\r\n\t<archive path\="C\:/Users/JRosseel/Google Drive/School/Master/Semester 3/Information Retrieval/lib/lucene-core-3.6.2.jar">\r\n\t\t<attributes>\r\n\t\t\t<attribute name\="javadoc_location" value\="file\:/C\:/Users/JRosseel/Google%20Drive/School/Master/Semester%203/Information%20Retrieval/lib/"/>\r\n\t\t</attributes>\r\n\t</archive>\r\n</userlibrary>\r\n
