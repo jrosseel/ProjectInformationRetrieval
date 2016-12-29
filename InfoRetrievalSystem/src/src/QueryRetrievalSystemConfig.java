@@ -18,7 +18,7 @@ public class QueryRetrievalSystemConfig {
 	public void initialize() 
 			throws IOException 
 	{
-		_analyzer = new StandardAnalyzer();
+		_analyzer = new PhoneticAnalyzer();
 		
 		System.out.println("Initializing query system...");
 		_index = FSDirectory.open(Paths.get(QuerySystemConsts.INDEX_DIRECTORY));
