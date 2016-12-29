@@ -12,7 +12,7 @@ import org.apache.lucene.store.Directory;
 import queries.QueryPerformer;
 
 /**
- * Core of the system. Returns a 
+ * Core of the system. Has the lifecycle of one query and its possible refinements
  */
 public class QueryRetrievalSystem {
 
@@ -27,6 +27,9 @@ public class QueryRetrievalSystem {
 		_analyzer = analyzer;
 	}
 	
+	/**
+	 * Main query execution specialist. Handles aspect 1 - 5
+	 */
 	public String getTopResultsForQuery(String query, int k) 
 			throws IOException 
 	{
@@ -36,15 +39,22 @@ public class QueryRetrievalSystem {
         
         ScoreDoc[] hits = matches.scoreDocs;
         
-		return printResults(_qPerformer, hits);
+		return printResults(hits);
 	}
 	
+	/**
+	 * Executes the Rochio algorithm to refine results
+	 * */
 	public String getTopResultsRankRefined(int[] goodChoiceIndexes, int[] badChoiceIndexes) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	private String printResults(QueryPerformer qp, ScoreDoc[] hits) 
+	
+	
+	/**
+	 * Creates a string that prints the passed results
+	 */
+	private String printResults(ScoreDoc[] hits) 
 				throws IOException
 	{
 		StringBuilder strBuilder = new StringBuilder();
@@ -54,7 +64,7 @@ public class QueryRetrievalSystem {
         for(int i=0;i<hits.length;++i) 
         {
             int docId = hits[i].doc;
-            Document d = qp.findDoc(docId);
+            Document d = _qPerformer.findDoc(docId);
             
             strBuilder.append((i + 1) + ". Document:" + d.get("filename"));
         }
