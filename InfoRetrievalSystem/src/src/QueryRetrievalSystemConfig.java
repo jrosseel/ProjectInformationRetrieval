@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.nio.file.Paths;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 import docindex.IndexBuilder;
+import soundex.PhoneticAnalyzer;
 
 public class QueryRetrievalSystemConfig {
 	

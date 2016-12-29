@@ -4,7 +4,10 @@ import java.io.IOException;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
@@ -18,6 +21,8 @@ public class QueryRetrievalSystem {
 
 	private Directory _index;
 	private Analyzer _analyzer;
+	private IndexReader _IndexReader;
+	private IndexSearcher _indexSearcher;
 	
 	private QueryPerformer _qPerformer;
 	
@@ -27,14 +32,21 @@ public class QueryRetrievalSystem {
 		_analyzer = analyzer;
 	}
 	
+	public void initialize() 
+			throws IOException 
+	{
+		_IndexReader = DirectoryReader.open(_index);
+		_indexSearcher = new IndexSearcher(_IndexReader);
+	}
+	
 	/**
 	 * Main query execution specialist. Handles aspect 1 - 5
 	 */
 	public String getTopResultsForQuery(String query, int k) 
 			throws IOException, ParseException 
 	{
-		_qPerformer = new QueryPerformer(_index, _analyzer);
-		_qPerformer.initialize(query);
+		_qPerformer = new QueryPerformer(_analyzer, _indexSearcher);
+		_qPerformer.setQuery(query);
 		
 		TopDocs matches = _qPerformer.getTopK(k);
         

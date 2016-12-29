@@ -1,7 +1,6 @@
 package src;
 
 import java.io.BufferedReader;
-import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -50,7 +49,7 @@ public class Main {
 		
 		while(true) {
 			String goodChoices = _readLine("Enter the document numbers you liked: ");
-			if(goodChoices == "stop")
+			if(goodChoices.equals("stop"))
 				break;
 	
 			int[] goodChoiceIndexes = _listToInt(goodChoices.split(" "));
