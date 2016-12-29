@@ -3,6 +3,8 @@ package src;
 import java.io.Console;
 import java.io.IOException;
 
+import org.apache.lucene.queryparser.classic.ParseException;
+
 /**
  * Entry point for the Group 2 Information Retrieval System. 
  * Contains the main logic for the search system.
@@ -27,14 +29,14 @@ public class Main {
 			runSystem(config);
 		}
 		// System failed to boot (to index files and thus create the database)
-		catch(IOException e) 
+		catch(IOException | ParseException e) 
 		{
 			e.printStackTrace();
 		}
 	}
 	
 	private static void runSystem(QueryRetrievalSystemConfig config) 
-			throws IOException 
+			throws IOException, ParseException 
 	{
 		QueryRetrievalSystem machine = new QueryRetrievalSystem(config.getIndex(), config.getAnalyzer());
 		

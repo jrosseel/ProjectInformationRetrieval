@@ -26,6 +26,7 @@ public class QueryPerformer {
 	{
 		this._index = index;
 		this._analyzer = analyzer;
+		this._queryStr = query;
 	}
 	
 	public void initialize()

@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
-
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
@@ -31,9 +31,10 @@ public class QueryRetrievalSystem {
 	 * Main query execution specialist. Handles aspect 1 - 5
 	 */
 	public String getTopResultsForQuery(String query, int k) 
-			throws IOException 
+			throws IOException, ParseException 
 	{
 		_qPerformer = new QueryPerformer(_index, _analyzer, query);
+		_qPerformer.initialize();
 		
 		TopDocs matches = _qPerformer.getTopK(k);
         
