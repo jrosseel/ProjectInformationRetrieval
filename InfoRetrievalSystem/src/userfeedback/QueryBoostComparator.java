@@ -7,9 +7,7 @@ package userfeedback;
  * @author Neil O. Rouben 
  */
  
-import java.util.*; 
- 
-import org.apache.lucene.search.*; 
+import java.util.*;
  
 public class QueryBoostComparator implements Comparator 
 { 
