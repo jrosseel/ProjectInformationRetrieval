@@ -40,7 +40,7 @@ public class Main {
 			throws IOException, ParseException 
 	{
 		QueryRetrievalSystem machine = new QueryRetrievalSystem(config.getIndex(), config.getAnalyzer());
-		
+		machine.initialize();
 		
 		String query = _readLine("Please enter a query: ");	
 	
