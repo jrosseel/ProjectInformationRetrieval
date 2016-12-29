@@ -17,22 +17,20 @@ public class QueryPerformer {
 	private Directory _index;
 	private Analyzer _analyzer;
 	
-	private String _queryStr;
 	private Query _query;
 	
 	private IndexSearcher _indexSearcher;
 	
-	public QueryPerformer(Directory index, Analyzer analyzer, String query)
+	public QueryPerformer(Directory index, Analyzer analyzer)
 	{
 		this._index = index;
 		this._analyzer = analyzer;
-		this._queryStr = query;
 	}
 	
-	public void initialize()
+	public void initialize(String queryStr)
 			throws IOException, ParseException 
 	{
-		_query = new QueryParser("contents", _analyzer).parse(this._queryStr);
+		_query = new QueryParser("contents", _analyzer).parse(queryStr);
 		
 		IndexReader reader = DirectoryReader.open(_index);
 		_indexSearcher = new IndexSearcher(reader);

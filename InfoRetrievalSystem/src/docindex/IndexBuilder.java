@@ -48,8 +48,9 @@ public class IndexBuilder {
             w = new IndexWriter(_index, _config);
             
             // read all html files and add them to the index
-            indexDirectory(QuerySystemConsts.DATASET_DIRECTORY);
             _queue = new ArrayList<File>();
+            indexDirectory(QuerySystemConsts.DATASET_DIRECTORY);
+           
             w.close();
             
             return true;

@@ -33,8 +33,8 @@ public class QueryRetrievalSystem {
 	public String getTopResultsForQuery(String query, int k) 
 			throws IOException, ParseException 
 	{
-		_qPerformer = new QueryPerformer(_index, _analyzer, query);
-		_qPerformer.initialize();
+		_qPerformer = new QueryPerformer(_index, _analyzer);
+		_qPerformer.initialize(query);
 		
 		TopDocs matches = _qPerformer.getTopK(k);
         

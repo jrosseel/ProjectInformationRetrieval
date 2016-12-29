@@ -1,7 +1,9 @@
 package src;
 
+import java.io.BufferedReader;
 import java.io.Console;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import org.apache.lucene.queryparser.classic.ParseException;
 
@@ -21,7 +23,7 @@ import org.apache.lucene.queryparser.classic.ParseException;
 public class Main {
 	
 	
-	public static void main() {
+	public static void main(String[] args) {
 		QueryRetrievalSystemConfig config = new QueryRetrievalSystemConfig();
 		
 		try {
@@ -41,31 +43,44 @@ public class Main {
 		QueryRetrievalSystem machine = new QueryRetrievalSystem(config.getIndex(), config.getAnalyzer());
 		
 		
-		Console cmd = System.console();
-		String query = cmd.readLine("Please enter a query: ");	
+		String query = _readLine("Please enter a query: ");	
 	
-		cmd.printf("Results:\n--------\n{0}\n",
+		_printf("Results:\n--------\n{0}\n",
 				machine.getTopResultsForQuery(query, 10));
 		
 		while(true) {
-			String goodChoices = cmd.readLine("Enter the document numbers you liked: ");
+			String goodChoices = _readLine("Enter the document numbers you liked: ");
 			if(goodChoices == "stop")
 				break;
 	
 			int[] goodChoiceIndexes = _listToInt(goodChoices.split(" "));
-			String badChoices = cmd.readLine("Enter the document numbers you hated: ");
+			String badChoices = _readLine("Enter the document numbers you hated: ");
 			int[] badChoiceIndexes = _listToInt(badChoices.split(" "));
 			
-			cmd.printf("Refined results:\n--------\n{0}\n",
+			_printf("Refined results:\n--------\n{0}\n",
 					machine.getTopResultsRankRefined(goodChoiceIndexes, badChoiceIndexes));
 		}
 		
-		cmd.printf("\n\n");
+		_printf("\n\n");
 		
 		// Clean machine and launch second query
 		runSystem(config);
 	}
 	
+	private static String _readLine(String format, Object... args) throws IOException {
+	    if (System.console() != null) {
+	        return System.console().readLine(format, args);
+	    }
+	    _printf(format, args);
+	    BufferedReader reader = new BufferedReader(new InputStreamReader(
+	            System.in));
+	    return reader.readLine();
+	}
+	
+	private static void _printf(String format, Object... args) {
+		 System.out.print(String.format(format, args));
+	}
+
 	private static int[] _listToInt(String[] split) {
 		int[] values = new int[split.length];
 		for(int i = 0; i < split.length; i++) {
