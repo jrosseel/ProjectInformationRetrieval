@@ -2,11 +2,14 @@ package queries;
 
 import java.io.IOException;
 
-public class TestPerformer {
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 
+public class TestPerformer {
+/*
 	public static void main(String[] args) {
 		try {
-			QueryPerformer performer = new QueryPerformer();
+			
+			QueryPerformer performer = new QueryPerformer(new StandardAnalyzer());
 			// Proximity Query (~ 4 = within 4 words)
 			performer.setQuery("\"22 CA581203\"~4");
 			// Normal query
@@ -19,5 +22,5 @@ public class TestPerformer {
 		}
 
 	}
-
+*/
 }

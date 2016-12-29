@@ -1,8 +1,7 @@
 package src;
 
-import java.awt.List;
 import java.io.Console;
-import java.util.ArrayList;
+import java.io.IOException;
 
 /**
  * Entry point for the Group 2 Information Retrieval System. 
@@ -21,30 +20,48 @@ public class Main {
 	
 	
 	public static void main() {
+		QueryRetrievalSystemConfig config = new QueryRetrievalSystemConfig();
+		
+		try {
+			config.initialize();
+			runSystem(config);
+		}
+		// System failed to boot (to index files and thus create the database)
+		catch(IOException e) 
+		{
+			e.printStackTrace();
+		}
+	}
 	
+	private static void runSystem(QueryRetrievalSystemConfig config) 
+			throws IOException 
+	{
+		QueryRetrievalSystem machine = new QueryRetrievalSystem(config.getIndex(), config.getAnalyzer());
+		
+		
 		Console cmd = System.console();
-		
 		String query = cmd.readLine("Please enter a query: ");	
-		
-		QueryRetrievalSystem machine = new QueryRetrievalSystem();
+	
 		cmd.printf("Results:\n--------\n{0}\n",
-				_printResults(machine.getTopResultsForQuery(query, 10)));
+				machine.getTopResultsForQuery(query, 10));
 		
 		while(true) {
 			String goodChoices = cmd.readLine("Enter the document numbers you liked: ");
 			if(goodChoices == "stop")
 				break;
-
+	
 			int[] goodChoiceIndexes = _listToInt(goodChoices.split(" "));
 			String badChoices = cmd.readLine("Enter the document numbers you hated: ");
 			int[] badChoiceIndexes = _listToInt(badChoices.split(" "));
 			
 			cmd.printf("Refined results:\n--------\n{0}\n",
-					_printResults(machine.getTopResultsRankRefined(goodChoiceIndexes, badChoiceIndexes)));
+					machine.getTopResultsRankRefined(goodChoiceIndexes, badChoiceIndexes));
 		}
 		
 		cmd.printf("\n\n");
-		main();
+		
+		// Clean machine and launch second query
+		runSystem(config);
 	}
 	
 	private static int[] _listToInt(String[] split) {
@@ -54,9 +71,5 @@ public class Main {
 		}
 		
 		return values;
-	}
-
-	private static String _printResults(String[] queryResults) {
-		return String.join("\n", queryResults);
 	}
 }
