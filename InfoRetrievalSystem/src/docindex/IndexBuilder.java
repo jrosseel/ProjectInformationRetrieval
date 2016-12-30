@@ -85,10 +85,10 @@ public class IndexBuilder {
 	    		 Document doc = new Document();
 	    		 // TextField: tokenize text
 	    		 // StringField: don't tokenize text
-	    		 doc.add(new TextField(QuerySystemConsts.FIELD_LABEL, fr));
+	    		 doc.add(new TextField(QuerySystemConsts.FIELD_DOC_INDEXEDCONTENTS, fr));
         		
-	    		 doc.add(new StoredField(QuerySystemConsts.FIELD_LABEL_RAW, readFile(br)));
-	    		 doc.add(new StringField(QuerySystemConsts.FIELD_TITLE, f.getName(), Field.Store.YES));
+	    		 doc.add(new StoredField(QuerySystemConsts.FIELD_DOC_TITLE, readTitle(br)));
+	    		 doc.add(new StringField(QuerySystemConsts.FIELD_DOC_FILENAME, f.getName(), Field.Store.YES));
 	    		 w.addDocument(doc);
 	    		 System.out.println("Added: " + f);
     		} 
@@ -99,6 +99,7 @@ public class IndexBuilder {
         	finally 
         	{
         		fr.close();
+        		fis.close();
         	}
         }
         
@@ -111,16 +112,27 @@ public class IndexBuilder {
         _queue.clear();
 	}
 	
-	private String readFile(BufferedReader br) 
+	private String readTitle(BufferedReader br) 
 			throws IOException 
 	{
-		StringBuilder strBuilder = new StringBuilder();
-		
 		String currLine;
-		while((currLine = br.readLine()) != null)
-			strBuilder.append(currLine + '\n');
+		boolean preRead = false;
 		
-		return strBuilder.toString();
+		while((currLine = br.readLine()) != null) {
+			if(!preRead) {
+				if(currLine.contains("<pre>"))
+					preRead = true;
+			}
+			else if(!_isEmptyOrWhiteSpace(currLine))
+				// First line that is not whitespace is title
+				return currLine;
+		}
+		
+		return "";
+	}
+
+	private boolean _isEmptyOrWhiteSpace(String currLine) {
+		return currLine.trim().equals("");
 	}
 
 	private void addFilesToIndex(File file) {

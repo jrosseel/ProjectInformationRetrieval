@@ -214,7 +214,7 @@ public class RocchioExpander
 		String targetStr = qBuf.toString(); 
 		// TODO: Evt integreren met Tim zijn query parser
 		try { 
-			query = new QueryParser(QuerySystemConsts.FIELD_LABEL, analyzer ).parse(targetStr); 
+			query = new QueryParser(QuerySystemConsts.FIELD_DOC_INDEXEDCONTENTS, analyzer ).parse(targetStr); 
 		} catch (ParseException e) { 
 			e.printStackTrace(); 
 		}        
@@ -244,7 +244,7 @@ public class RocchioExpander
 			// Get text of the document and append it 
 			StringBuffer docTxtBuffer = new StringBuffer();
 
-			String[] docTxtFlds = doc.getValues( QuerySystemConsts.FIELD_LABEL_RAW ); 
+			String[] docTxtFlds = doc.getValues( QuerySystemConsts.FIELD_DOC_TITLE ); 
 
 			if(docTxtFlds.length > 0)
 				for(int j = 0; j < docTxtFlds.length; j++)
@@ -301,7 +301,7 @@ public class RocchioExpander
 			{ 
 				// Create Term 
 				String termTxt = termsTxt[i]; 
-				Term term = new Term( QuerySystemConsts.FIELD_LABEL, termTxt ); 
+				Term term = new Term( QuerySystemConsts.FIELD_DOC_INDEXEDCONTENTS, termTxt ); 
 
 				// Calculate weight 
 				float tf = termFrequencies[i]; 
@@ -444,7 +444,7 @@ public class RocchioExpander
 		for ( int i = 0; i < splitArray.length; i++ ) 
 		{ 
 			String termTxt = splitArray[i]; 
-			Term term = new Term( QuerySystemConsts.FIELD_LABEL, termTxt ); 
+			Term term = new Term( QuerySystemConsts.FIELD_DOC_INDEXEDCONTENTS, termTxt ); 
 
 			// Create BoostableQuery and add it to the collection 
 			BoostableQuery termQuery = new BoostableQuery( term ); 
