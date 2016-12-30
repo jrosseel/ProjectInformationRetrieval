@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-import java.util.logging.Logger;
 import java.util.regex.PatternSyntaxException;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -30,8 +29,7 @@ public class RocchioExpander
 	private Analyzer analyzer; 
 	private IndexSearcher searcher; 
 	private TFIDFSimilarity similarity; 
-	private Vector<BoostableQuery> expandedTerms;     
-	private static Logger logger = Logger.getLogger( "QueryExpansion" ); 
+	private Vector<BoostableQuery> expandedTerms;
 
 	/**
 	 * Creates a new instance of QueryExpansion 
@@ -120,7 +118,7 @@ public class RocchioExpander
 		float alpha = QuerySystemConsts.ROCHIO_ALPHA; 
 		float beta = QuerySystemConsts.ROCCHIO_BETA; 
 		float decay = QuerySystemConsts.DECAY_FLD; 
-		int termNum = QuerySystemConsts.TERM_NUM_FLD;                          
+		int termNum = QuerySystemConsts.MAX_ROCCHIO_TERM_EXPANSION;                        
 
 		// Create combine documents term vectors - sum ( rel term vectors ) 
 		Vector<QueryTermVector> docsTermVector = getDocsTerms( hits, k, analyzer ); 
@@ -157,8 +155,7 @@ public class RocchioExpander
 		Query expandedQuery; 
 
 		// setBoost of docs terms 
-		Vector<BoostableQuery> docsTerms = setBoost( docsTermsVector, beta, decay ); 
-		logger.finer( docsTerms.toString() ); 
+		Vector<BoostableQuery> docsTerms = setBoost( docsTermsVector, beta, decay );
 
 		// setBoost of query terms 
 		// Get queryTerms from the query 
@@ -176,7 +173,6 @@ public class RocchioExpander
 		expandedQuery = null; 
 		try { 
 			expandedQuery = mergeQueries( expandedQueryTerms, maxExpandedQueryTerms ); 
-			logger.finer( expandedQuery.toString() ); 
 		} catch (QueryNodeException e) { 
 			e.printStackTrace(); 
 		} 
@@ -314,8 +310,7 @@ public class RocchioExpander
 				float weight = tf * idf; 
 
 				// Adjust weight by decay factor 
-				weight = weight - (weight * decay); 
-				logger.finest("weight: " + weight); 
+				weight = weight - (weight * decay);
 
 				// Create BoostableQuery and add it to the collection 
 				BoostableQuery termQuery = new BoostableQuery( term ); 
@@ -407,8 +402,7 @@ public class RocchioExpander
 			BoostableQuery currentTerm = iterator.next(); 
 			if ( term.getTerm().equals( currentTerm.getTerm() ) ) 
 			{ 
-				termF = currentTerm; 
-				logger.finest( "Term Found: " + term ); 
+				termF = currentTerm;
 			} 
 		} 
 

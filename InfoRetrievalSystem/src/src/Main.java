@@ -44,7 +44,7 @@ public class Main {
 		
 		String query = _readLine("Please enter a query: ");	
 	
-		_printf("Results:\n--------\n{0}\n",
+		_printf("Results:\n--------\n%s\n",
 				machine.getTopResultsForQuery(query, 10));
 		
 		while(true) {
@@ -56,7 +56,7 @@ public class Main {
 			String badChoices = _readLine("Enter the document numbers you hated: ");
 			int[] badChoiceIndexes = _listToInt(badChoices.split(" "));
 			
-			_printf("Refined results:\n--------\n{0}\n",
+			_printf("Refined results:\n--------\n%s\n",
 					machine.getTopResultsRankRefined(goodChoiceIndexes, badChoiceIndexes));
 		}
 		
@@ -81,11 +81,16 @@ public class Main {
 	}
 
 	private static int[] _listToInt(String[] split) {
-		int[] values = new int[split.length];
-		for(int i = 0; i < split.length; i++) {
-			values[i] = Integer.decode(split[i]);
+		if(split.length > 0 && !split[0].equals("")) {
+			int[] values = new int[split.length];
+			
+			for(int i = 0; i < split.length; i++) {
+				values[i] = Integer.decode(split[i]);
+			}
+			
+			return values;
 		}
-		
-		return values;
+		else 
+			return new int[0];
 	}
 }

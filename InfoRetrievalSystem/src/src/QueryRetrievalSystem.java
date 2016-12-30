@@ -91,7 +91,8 @@ public class QueryRetrievalSystem {
 													// - 1 want zie printResults
 			approvedHits.add(_hits[goodChoiceIndexes[i] - 1]);
 		
-		return new TopDocs(approvedHits.size(), (ScoreDoc[]) approvedHits.toArray(), 1000f);
+		
+		return new TopDocs(approvedHits.size(), approvedHits.toArray(new ScoreDoc[approvedHits.size()]), 1000f);
 	}
 
 	/**
@@ -110,6 +111,7 @@ public class QueryRetrievalSystem {
             Document d = _qPerformer.findDoc(docId);
             
             strBuilder.append((i + 1) + ". Document:" + d.get("filename"));
+            strBuilder.append('\n');
         }
         
         return strBuilder.toString();
