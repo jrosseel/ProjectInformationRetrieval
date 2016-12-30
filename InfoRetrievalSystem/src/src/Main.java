@@ -43,7 +43,7 @@ public class Main {
 		machine.initialize();
 		
 		String query = _readLine("Please enter a query: ");	
-	
+						
 		_printf("Results:\n--------\n%s\n",
 				machine.getTopResultsForQuery(query, 10));
 		

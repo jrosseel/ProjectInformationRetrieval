@@ -53,6 +53,18 @@ public class QueryRetrievalSystem {
 			throws IOException, ParseException 
 	{
 		_qPerformer = new QueryPerformer(_analyzer, _indexSearcher);
+        if(query.contains("/")){
+        	String toReplace = query.substring(query.lastIndexOf("/"));
+            if (query.toLowerCase().contains("/near")) {      
+            	// near
+                query = query.replace(toReplace,"~2");                   
+            }
+            else{
+            	// within
+                query = query.replace(toReplace,"~"+toReplace.substring(1));
+            }
+        }
+        		
 		_qPerformer.setQuery(query);
 		
 		TopDocs matches = _qPerformer.getTopK(k);
