@@ -110,7 +110,7 @@ public class QueryRetrievalSystem {
             int docId = hits[i].doc;
             Document d = _qPerformer.findDoc(docId);
             
-            strBuilder.append((i + 1) + ". Document:" + d.get("filename"));
+            strBuilder.append((i + 1) + ". Document:" + d.get(QuerySystemConsts.FIELD_LABEL_RAW));
             strBuilder.append('\n');
         }
         

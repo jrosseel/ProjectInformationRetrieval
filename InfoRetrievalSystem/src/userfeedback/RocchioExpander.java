@@ -244,12 +244,11 @@ public class RocchioExpander
 			// Get text of the document and append it 
 			StringBuffer docTxtBuffer = new StringBuffer();
 
-			String[] docTxtFlds = doc.getValues( QuerySystemConsts.FIELD_LABEL ); 
-			if (docTxtFlds.length == 0) continue; 
-			for ( int j = 0; j < docTxtFlds.length; j++ ) 
-			{ 
-				docTxtBuffer.append( docTxtFlds[j] + " " ); 
-			}       
+			String[] docTxtFlds = doc.getValues( QuerySystemConsts.FIELD_LABEL_RAW ); 
+
+			if(docTxtFlds.length > 0)
+				for(int j = 0; j < docTxtFlds.length; j++)
+					docTxtBuffer.append( docTxtFlds[j] + " " );   
 
 			// Create termVector and add it to vector 
 			QueryTermVector docTerms = new QueryTermVector( docTxtBuffer.toString(), analyzer ); 
