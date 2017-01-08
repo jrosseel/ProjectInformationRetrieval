@@ -94,11 +94,11 @@ public class QueryRetrievalSystem {
 			_goodChoiceIndexes = goodChoiceIndexes;
 		else {
 			int[] temp = _goodChoiceIndexes;
-			_goodChoiceIndexes = new int [temp.length + _goodChoiceIndexes.length];
+			_goodChoiceIndexes = new int [temp.length + goodChoiceIndexes.length];
 			for(int i = 0; i < temp.length; i++)
 				_goodChoiceIndexes[i] = temp[i];
 			for(int i = 0; i < goodChoiceIndexes.length; i++)
-				_goodChoiceIndexes[i] = goodChoiceIndexes[temp.length + i];
+				_goodChoiceIndexes[temp.length + i] = goodChoiceIndexes[i];
 		}
 	}
 	private void cacheBadChoice(int[] badChoiceIndexes) {
@@ -106,11 +106,11 @@ public class QueryRetrievalSystem {
 			_badChoiceIndexes = badChoiceIndexes;
 		else {
 			int[] temp = _badChoiceIndexes;
-			_badChoiceIndexes = new int [temp.length + _goodChoiceIndexes.length];
+			_badChoiceIndexes = new int [temp.length + badChoiceIndexes.length];
 			for(int i = 0; i < temp.length; i++)
 				_badChoiceIndexes[i] = temp[i];
 			for(int i = 0; i < badChoiceIndexes.length; i++)
-				_badChoiceIndexes[i] = badChoiceIndexes[temp.length + i];
+				_badChoiceIndexes[temp.length + i] = badChoiceIndexes[i];
 		}
 	}
 
