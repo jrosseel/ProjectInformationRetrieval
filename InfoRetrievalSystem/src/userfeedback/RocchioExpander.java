@@ -53,6 +53,7 @@ public class RocchioExpander
 	 *            that will be expanded 
 	 * @param hits - 
 	 *            from the original query to use for expansion 
+	 * @param topDocs 
 	 * @param prop - properties that contain necessary values to perform query;  
 	 *               see constants for field names and values 
 	 *  
@@ -61,13 +62,14 @@ public class RocchioExpander
 	 * @throws IOException 
 	 * @throws ParseException 
 	 */ 
-	public Query expandQuery( String queryStr, TopDocs hits, int k ) 
+	public Query expandQuery( String queryStr, TopDocs goodHits, TopDocs badHits, int k ) 
 			throws IOException 
 	{ 
 		// Get Docs to be used in query expansion 
-		Vector<Document> vHits = getDocs( queryStr, hits, k ); 
+		Vector<Document> gHits = getDocs( queryStr, goodHits, k ); 
+		Vector<Document> bHits = getDocs( queryStr,  badHits, k ); 
 
-		return expandQuery( queryStr, vHits, k ); 
+		return expandQuery( queryStr, gHits, bHits, k ); 
 	} 
 
 
@@ -103,7 +105,8 @@ public class RocchioExpander
 	 * qm = alpha * query + ( beta / relevanDocsCount ) * Sum ( rel docs vector ) 
 	 *  
 	 * @param queryStr - that will be expanded 
-	 * @param hits - from the original query to use for expansion 
+	 * @param goodHits - relevant docs from the original query to use for expansion 
+	 * @param badHits  - irrelevant docs from the original query to use for expansion 
 	 * @param prop - properties that contain necessary values to perform query;  
 	 *               see constants for field names and values 
 	 *  
@@ -111,20 +114,22 @@ public class RocchioExpander
 	 * @throws IOException 
 	 * @throws ParseException 
 	 */ 
-	public Query expandQuery( String queryStr, Vector<Document> hits, int k) 
+	public Query expandQuery( String queryStr, Vector<Document> goodHits, Vector<Document> badHits, int k) 
 			throws IOException 
 	{ 
 		// Load Necessary Values from Properties 
 		float alpha = QuerySystemConsts.ROCHIO_ALPHA; 
-		float beta = QuerySystemConsts.ROCCHIO_BETA; 
+		float beta =  QuerySystemConsts.ROCCHIO_BETA; 
+		float gamma = QuerySystemConsts.ROCCHIO_GAMMA; 
 		float decay = QuerySystemConsts.DECAY_FLD; 
 		int termNum = QuerySystemConsts.MAX_ROCCHIO_TERM_EXPANSION;                        
 
 		// Create combine documents term vectors - sum ( rel term vectors ) 
-		Vector<QueryTermVector> docsTermVector = getDocsTerms( hits, k, analyzer ); 
-
+		Vector<QueryTermVector> relevantTermVector   = getDocsTerms ( goodHits, k, analyzer ); 
+		Vector<QueryTermVector> irrelevantTermVector = getDocsTerms ( badHits, k, analyzer ); 
+		
 		// Adjust term features of the docs with alpha * query; and beta; and assign weights/boost to terms (tf*idf) 
-		Query expandedQuery = adjust( docsTermVector, queryStr, alpha, beta, decay, k, termNum ); 
+		Query expandedQuery = adjust( relevantTermVector, irrelevantTermVector, queryStr, alpha, beta, gamma, decay, k, termNum ); 
 
 		return expandedQuery; 
 	} 
@@ -139,6 +144,7 @@ public class RocchioExpander
 	 * @param queryStr - that will be expanded 
 	 * @param alpha - factor of the equation 
 	 * @param beta - factor of the equation 
+	 * @param gamma - factor of the equation 
 	 * @param docsRelevantCount - number of the top documents to assume to be relevant 
 	 * @param maxExpandedQueryTerms - maximum number of terms in expanded query 
 	 * 
@@ -147,24 +153,29 @@ public class RocchioExpander
 	 * @throws IOException 
 	 * @throws ParseException 
 	 */ 
-	public Query adjust( Vector<QueryTermVector> docsTermsVector, String queryStr,  
-			float alpha, float beta, float decay, int docsRelevantCount,  
+	public Query adjust( Vector<QueryTermVector> relevantTerms, Vector<QueryTermVector> irrelevantTerms, String queryStr,  
+			float alpha, float beta, float gamma, float decay, int docsRelevantCount,  
 			int maxExpandedQueryTerms ) 
 					throws IOException 
 	{ 
 		Query expandedQuery; 
 
 		// setBoost of docs terms 
-		Vector<BoostableQuery> docsTerms = setBoost( docsTermsVector, beta, decay );
-
+		Vector<BoostableQuery> boostedRelevant = setBoost( relevantTerms, beta, decay );
+		Vector<BoostableQuery> boostedIrrelevant = setBoost( relevantTerms, gamma, decay );
+		
 		// setBoost of query terms 
 		// Get queryTerms from the query 
 		QueryTermVector queryTermsVector = new QueryTermVector( queryStr, analyzer );         
 		Vector<BoostableQuery> queryTerms = setBoost( queryTermsVector, alpha );         
 
-		// combine weights according to expansion formula 
-		Vector<BoostableQuery> expandedQueryTerms = combine( queryTerms, docsTerms ); 
-		setExpandedTerms( expandedQueryTerms );  
+		// combine weights according to expansion formula. Expansion formula will first add all relevant, than substract the irrelevant
+		Vector<BoostableQuery> expandedQueryTerms =   combine( queryTerms, boostedRelevant, true );
+		Vector<BoostableQuery> downpandedQueryTerms = combine( expandedQueryTerms, boostedIrrelevant, false );
+		
+		Vector<BoostableQuery> filteredQueryTerms = filterNegativeWeights(downpandedQueryTerms);
+		
+		setExpandedTerms( downpandedQueryTerms );  
 
 		Comparator comparator = new QueryBoostComparator(); 
 		Collections.sort( expandedQueryTerms, comparator ); 
@@ -180,7 +191,18 @@ public class RocchioExpander
 		return expandedQuery; 
 	} 
 
-
+	private Vector<BoostableQuery> filterNegativeWeights(Vector<BoostableQuery> downpandedQueryTerms) {
+		Vector<BoostableQuery> finalQuery = new Vector<BoostableQuery>();
+		
+		for(int i = 0; i < downpandedQueryTerms.size(); i++) {
+			BoostableQuery term = downpandedQueryTerms.elementAt(i);
+			
+			if(term.getBoost() > 0)
+				finalQuery.add(term);
+		}
+		
+		return finalQuery;
+	}
 
 	/**
 	 * Merges <code>termQueries</code> into a single query. 
@@ -212,7 +234,6 @@ public class RocchioExpander
 		}    
 
 		String targetStr = qBuf.toString(); 
-		// TODO: Evt integreren met Tim zijn query parser
 		try { 
 			query = new QueryParser(QuerySystemConsts.FIELD_DOC_INDEXEDCONTENTS, analyzer ).parse(targetStr); 
 		} catch (ParseException e) { 
@@ -346,6 +367,7 @@ public class RocchioExpander
 				{ 
 					// Add boost factors of terms 
 					term.setBoost( term.getBoost() + tmpTerm.getBoost() ); 
+					
 					// delete uncessary term 
 					terms.remove( j );      
 					// decrement j so that term is not skipped 
@@ -359,7 +381,7 @@ public class RocchioExpander
 	/**
 	 * combine weights according to expansion formula 
 	 */ 
-	public Vector<BoostableQuery> combine( Vector<BoostableQuery> queryTerms, Vector<BoostableQuery> docsTerms ) 
+	public Vector<BoostableQuery> combine( Vector<BoostableQuery> queryTerms, Vector<BoostableQuery> docsTerms, boolean isRelevant) 
 	{ 
 		Vector<BoostableQuery> terms = new Vector<BoostableQuery>(); 
 		// Add Terms from the docsTerms 
@@ -372,7 +394,12 @@ public class RocchioExpander
 			// Term already exists update its boost 
 			if ( term != null ) 
 			{ 
-				float weight = qTerm.getBoost() + term.getBoost(); 
+				
+				float weight;
+				if (isRelevant)
+					weight = qTerm.getBoost() + term.getBoost(); 
+				else
+					weight = qTerm.getBoost() - term.getBoost();
 				term.setBoost( weight ); 
 			} 
 			// Term does not exist; add it 

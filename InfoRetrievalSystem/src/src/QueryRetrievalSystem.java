@@ -80,6 +80,8 @@ public class QueryRetrievalSystem {
 	}
 	
 	private String _query;
+	private int[] _goodChoiceIndexes = null;
+	private int[] _badChoiceIndexes  = null;
 	private ScoreDoc[] _hits;
 	private int _topK;
 	
@@ -88,25 +90,53 @@ public class QueryRetrievalSystem {
 	 * @throws IOException 
 	 * */
 	public String getTopResultsRankRefined(int[] goodChoiceIndexes, int[] badChoiceIndexes) throws IOException {
-		Query q = _rExpander.expandQuery(_query, _getGoodHits(goodChoiceIndexes), _topK);
+		// Cache choices so feedback loop gets smarter and smarter
+		cacheGoodChoice(goodChoiceIndexes);
+		cacheBadChoice(badChoiceIndexes);
+		
+		Query q = _rExpander.expandQuery(_query, _getHits(_goodChoiceIndexes), _getHits(_badChoiceIndexes), _topK);
 		TopDocs matches = _indexSearcher.search(q, _topK);
-		// Todo: hier weer cachen voor feedback loop zodat we meer dan een keer rochio kunnen doen en steeds slimmer wordt
 		
 		return printResults(matches.scoreDocs);
 	}
 	
-	
-	private TopDocs _getGoodHits(int[] goodChoiceIndexes) {
+	// A bit dirty the following functions since they use direct abstractions
+	private void cacheGoodChoice(int[] goodChoiceIndexes) {
+		if(_goodChoiceIndexes == null)
+			_goodChoiceIndexes = goodChoiceIndexes;
+		else {
+			int[] temp = _goodChoiceIndexes;
+			_goodChoiceIndexes = new int [temp.length + goodChoiceIndexes.length];
+			for(int i = 0; i < temp.length; i++)
+				_goodChoiceIndexes[i] = temp[i];
+			for(int i = 0; i < goodChoiceIndexes.length; i++)
+				_goodChoiceIndexes[temp.length + i] = goodChoiceIndexes[i];
+		}
+	}
+	private void cacheBadChoice(int[] badChoiceIndexes) {
+		if(_badChoiceIndexes == null)
+			_badChoiceIndexes = badChoiceIndexes;
+		else {
+			int[] temp = _badChoiceIndexes;
+			_badChoiceIndexes = new int [temp.length + badChoiceIndexes.length];
+			for(int i = 0; i < temp.length; i++)
+				_badChoiceIndexes[i] = temp[i];
+			for(int i = 0; i < badChoiceIndexes.length; i++)
+				_badChoiceIndexes[temp.length + i] = badChoiceIndexes[i];
+		}
+	}
+
+	private TopDocs _getHits(int[] choiceIndexes) {
 		List<ScoreDoc> approvedHits = new ArrayList<ScoreDoc>();
 		
-		for(int i = 0; i < goodChoiceIndexes.length; i++)
+		for(int i = 0; i < choiceIndexes.length; i++)
 													// - 1 want zie printResults
-			approvedHits.add(_hits[goodChoiceIndexes[i] - 1]);
+			approvedHits.add(_hits[choiceIndexes[i] - 1]);
 		
 		
 		return new TopDocs(approvedHits.size(), approvedHits.toArray(new ScoreDoc[approvedHits.size()]), 1000f);
 	}
-
+	
 	/**
 	 * Creates a string that prints the passed results
 	 */
